@@ -2,53 +2,22 @@ pipeline {
     agent any
 
     stages {
-        stage('Checkout') {
-            steps {
-                git pipeline {
-    agent any
 
-    stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/https://github.com/HarshAkhand05/Jenkins_demo.git/project.git'
+                git 'https://github.com/HarshAkhand05/Jenkins_demo.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'mvn clean compile'
+                bat 'mvn clean compile'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
-            }
-        }
-
-        stage('Report') {
-            steps {
-                publishHTML([
-                    reportDir: 'reports',
-                    reportFiles: 'extent-report.html',
-                    reportName: 'Test Report'
-                ])
-            }
-        }
-    }
-}
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'mvn clean compile'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'mvn test'
+                bat 'mvn test'
             }
         }
 
