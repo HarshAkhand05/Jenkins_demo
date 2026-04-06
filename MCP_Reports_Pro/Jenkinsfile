@@ -4,7 +4,39 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/HarshAkhand05/Jenkins_demo.git'
+                git pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/https://github.com/HarshAkhand05/Jenkins_demo.git/project.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean compile'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'mvn test'
+            }
+        }
+
+        stage('Report') {
+            steps {
+                publishHTML([
+                    reportDir: 'reports',
+                    reportFiles: 'extent-report.html',
+                    reportName: 'Test Report'
+                ])
+            }
+        }
+    }
+}
             }
         }
 
