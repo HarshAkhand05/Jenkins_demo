@@ -48,33 +48,49 @@ public class LoginSteps {
         Hooks.getTest().info("Entered Username: " + username);
     }
 
-    @Then("verify login result from excel")
-    public void verifyResult() {
+   @Then("verify login result from excel")
+public void verifyResult() {
 
-        String[] data = Hooks.getCurrentRowData();
-        String expected = data[2].trim(); // trim removes extra spaces
+    String[] data = Hooks.getCurrentRowData();
+    String expected = data[2].trim();
 
-        // Wait up to 10 seconds for URL to change
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
 
-        try {
-            if (expected.equals("pass")) {
-                // Wait until URL contains "profile"
-                wait.until(ExpectedConditions.urlContains("profile"));
-                Hooks.getTest().pass("✅ Login passed - reached profile page");
+    try {
+        // Wait for either success OR failure
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.urlContains("profile"),
+                ExpectedConditions.visibilityOfElementLocated(
+                        By.xpath("//p[@id='name' and string-length(text())>0]")
+                )
+        ));
 
+        String currentUrl = driver.getCurrentUrl();
+        boolean isErrorVisible = driver.findElements(
+                By.xpath("//p[@id='name' and string-length(text())>0]")
+        ).size() > 0;
+
+        if (expected.equalsIgnoreCase("pass")) {
+
+            if (currentUrl.contains("profile")) {
+                Hooks.getTest().pass("✅ Login passed");
             } else {
-                // Wait until error message appears
-                wait.until(ExpectedConditions.visibilityOfElementLocated(
-                        By.id("name")  // error message element on demoqa
-                ));
-                Hooks.getTest().pass("✅ Login failed as expected");
+                throw new Exception("Expected PASS but login failed");
             }
 
-        } catch (Exception e) {
-            String currentUrl = driver.getCurrentUrl();
-            Hooks.getTest().fail("❌ Test failed. Current URL: " + currentUrl);
-            assert false : "Test failed. URL: " + currentUrl;
+        } else {
+
+            if (isErrorVisible) {
+                Hooks.getTest().pass("✅ Login failed as expected");
+            } else {
+                throw new Exception("Expected FAIL but login passed");
+            }
         }
+
+    } catch (Exception e) {
+        String currentUrl = driver.getCurrentUrl();
+        Hooks.getTest().fail("❌ Test failed. Current URL: " + currentUrl);
+        assert false : "Test failed. URL: " + currentUrl;
     }
+}
 }
