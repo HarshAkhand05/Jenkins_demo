@@ -3,12 +3,6 @@ pipeline {
 
     stages {
 
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/HarshAkhand05/Jenkins_demo.git'
-            }
-        }
-
         stage('Build') {
             steps {
                 bat 'mvn clean compile'
@@ -24,7 +18,7 @@ pipeline {
         stage('Report') {
             steps {
                 publishHTML([
-                    reportDir: 'reports',
+                    reportDir: 'reports',        // make sure this folder exists
                     reportFiles: 'extent-report.html',
                     reportName: 'Test Report'
                 ])
