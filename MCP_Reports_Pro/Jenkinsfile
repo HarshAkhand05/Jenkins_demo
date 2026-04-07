@@ -5,23 +5,29 @@ pipeline {
 
         stage('Build') {
             steps {
-                bat 'mvn clean compile'
+                dir('MCP_Reports_Pro') {
+                    bat 'mvn clean compile'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                bat 'mvn test'
+                dir('MCP_Reports_Pro') {
+                    bat 'mvn test'
+                }
             }
         }
 
         stage('Report') {
             steps {
-                publishHTML([
-                    reportDir: 'reports',        // make sure this folder exists
-                    reportFiles: 'extent-report.html',
-                    reportName: 'Test Report'
-                ])
+                dir('MCP_Reports_Pro') {
+                    publishHTML([
+                        reportDir: 'reports',
+                        reportFiles: 'extent-report.html',
+                        reportName: 'Test Report'
+                    ])
+                }
             }
         }
     }
